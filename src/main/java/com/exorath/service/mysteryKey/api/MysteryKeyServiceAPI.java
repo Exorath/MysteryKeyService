@@ -38,7 +38,7 @@ public class MysteryKeyServiceAPI implements Service {
     @Override
     public KeyPlayer getPlayer(String uuid) {
         try {
-            return GSON.fromJson(Unirest.get("/players/{uuid}").routeParam("uuid", uuid).asString().getBody(), KeyPlayer.class);
+            return GSON.fromJson(Unirest.get(url("/players/{uuid}")).routeParam("uuid", uuid).asString().getBody(), KeyPlayer.class);
         } catch (UnirestException e) {
             e.printStackTrace();
             return null;
@@ -48,7 +48,7 @@ public class MysteryKeyServiceAPI implements Service {
     @Override
     public AddFragmentsRes addFragments(String uuid, int amount) {
         try {
-            return GSON.fromJson(Unirest.post("/players/{uuid}/fragments").routeParam("uuid", uuid).queryString("amount", amount).asString().getBody(), AddFragmentsRes.class);
+            return GSON.fromJson(Unirest.post(url("/players/{uuid}/fragments")).routeParam("uuid", uuid).queryString("amount", amount).asString().getBody(), AddFragmentsRes.class);
         } catch (UnirestException e) {
             e.printStackTrace();
             return new AddFragmentsRes(-1, e.getMessage());
@@ -58,7 +58,7 @@ public class MysteryKeyServiceAPI implements Service {
     @Override
     public AddKeysSuccess addKeys(String uuid, int amount) {
         try {
-            return GSON.fromJson(Unirest.post("/players/{uuid}/keys").routeParam("uuid", uuid).queryString("amount", amount).asString().getBody(), AddKeysSuccess.class);
+            return GSON.fromJson(Unirest.post(url("/players/{uuid}/keys")).routeParam("uuid", uuid).queryString("amount", amount).asString().getBody(), AddKeysSuccess.class);
         } catch (UnirestException e) {
             e.printStackTrace();
             return new AddKeysSuccess(-1, e.getMessage());
