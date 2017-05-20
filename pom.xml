@@ -20,7 +20,7 @@
                             <mainClass>com.exorath.service.mysteryKey.Main</mainClass>
                         </transformer>
                     </transformers>
-                    <finalName>RankService</finalName>
+                    <finalName>MysteryKeyService</finalName>
                 </configuration>
                 <executions>
                     <execution>
