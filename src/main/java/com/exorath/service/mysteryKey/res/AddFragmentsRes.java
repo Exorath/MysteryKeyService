@@ -21,6 +21,7 @@ package com.exorath.service.mysteryKey.res;
  */
 public class AddFragmentsRes extends Success {
     private KeyPlayer account;
+    private boolean keyCrafted = false;
 
     public AddFragmentsRes() {}
 
@@ -28,9 +29,10 @@ public class AddFragmentsRes extends Success {
         super(code, error);
     }
 
-    public AddFragmentsRes(KeyPlayer account) {
+    public AddFragmentsRes(KeyPlayer account, boolean keyCrafted) {
         super(true);
         this.account = account;
+        this.keyCrafted = keyCrafted;
     }
 
     public KeyPlayer getAccount() {

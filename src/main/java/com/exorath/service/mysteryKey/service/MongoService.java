@@ -26,6 +26,7 @@ import com.mongodb.client.model.FindOneAndUpdateOptions;
 import com.mongodb.client.model.ReturnDocument;
 import org.bson.Document;
 
+import static com.mongodb.client.model.Filters.and;
 import static com.mongodb.client.model.Filters.gte;
 import static com.mongodb.client.model.Updates.inc;
 
@@ -41,7 +42,7 @@ public class MongoService implements Service {
 
     public KeyPlayer getPlayer(String uuid) {
         Document document = accountsCollection.find(new Document("_id", uuid)).first();
-        if(document == null)
+        if (document == null)
             return new KeyPlayer();
         return playerFromDoc(document);
     }
@@ -51,13 +52,21 @@ public class MongoService implements Service {
             Document document = accountsCollection.findOneAndUpdate(new Document("_id", uuid), inc("fragments", amount), new FindOneAndUpdateOptions().upsert(true).returnDocument(ReturnDocument.AFTER));
             if (document == null)
                 return new AddFragmentsRes(-1, "Query did not return an account");
-            return new AddFragmentsRes(playerFromDoc(document));
-        }catch (Exception e){
+            KeyPlayer keyPlayer = playerFromDoc(document);
+            int fragments = keyPlayer.getFragments();
+            int keys = (int) Math.floor(fragments / 3.0d);
+            if (keys > 0) {
+                Document updatedKeysDoc = accountsCollection.findOneAndUpdate(new Document("_id", uuid), and(inc("keys", keys), inc("fragments", -3 * fragments)));
+                return new AddFragmentsRes(playerFromDoc(updatedKeysDoc), true);
+            } else
+                return new AddFragmentsRes(playerFromDoc(document), false);
+        } catch (Exception e) {
             e.printStackTrace();
             return new AddFragmentsRes(-1, e.getMessage());
         }
     }
-    private KeyPlayer playerFromDoc(Document doc){
+
+    private KeyPlayer playerFromDoc(Document doc) {
         return new KeyPlayer(doc.getInteger("keys", 0), doc.getInteger("fragments", 0));
     }
 
@@ -66,13 +75,13 @@ public class MongoService implements Service {
         try {
             gte("keys", 10);
             Document query = new Document("_id", uuid);
-            if(amount < 0)
+            if (amount < 0)
                 query.append("keys", new Document("$gte", amount));
             Document document = accountsCollection.findOneAndUpdate(query, inc("keys", amount), new FindOneAndUpdateOptions().returnDocument(ReturnDocument.AFTER));
             if (document == null)
                 return new AddKeysSuccess(-1, "Not enough keys");
             return new AddKeysSuccess(playerFromDoc(document));
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             return new AddKeysSuccess(-1, e.getMessage());
         }
